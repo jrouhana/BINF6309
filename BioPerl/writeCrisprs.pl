@@ -70,7 +70,6 @@ for (
 	$windowStart += $stepSize
   )
 {
-
 	#Get a 21-mer substring from sequenceRef (two $ to deference reference to
 	#sequence string) starting at the window start for length $windowStart
 	my $crisprSeq = substr( $$sequenceRef, $windowStart, $windowSize );
@@ -84,14 +83,13 @@ for (
 		$last12Counts{$2}++;
 
 	}
-
 }
 
 #Initialize the CRISPR count to zero
 my $crisprCount = 0;
 
 #Loop through the hash of last 12 counts
-for my $last12Seq ( sort (keys %last12Counts) ) {
+for my $last12Seq ( sort ( keys %last12Counts ) ) {
 
 	#Check if count == 1 for this sequence
 	if ( $last12Counts{$last12Seq} == 1 ) {
@@ -101,6 +99,7 @@ for my $last12Seq ( sort (keys %last12Counts) ) {
 		$crisprCount++;
 
 		#Print the CRISPR in FASTA format.
-		print FASTA_OUT ">crispr_$crisprCount CRISPR\n", "$kMerHash{$last12Seq}\n";
+		print FASTA_OUT ">crispr_$crisprCount CRISPR\n",
+		  "$kMerHash{$last12Seq}\n";
 	}
 }

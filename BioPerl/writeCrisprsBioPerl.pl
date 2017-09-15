@@ -8,6 +8,18 @@ use diagnostics;
 use Bio::Seq;
 use Bio::SeqIO;
 
+# Use Bio::SeqIO to write to FASTA file
+my $outputObject = Bio::SeqIO->new(
+	-file   => ">crisprs1.fasta",
+	-format => "fasta"
+);
+
+# Use Bio::SeqIO to read in FASTA file
+my $fastaObjects = Bio::SeqIO->new(
+	-file   => "dmel-all-chromosome-r6.17.fasta",
+	-format => 'fasta'
+);
+
 # Load into a hash all 21-mers ending in GG from dmel-all-chromosome.r6.02.fasta
 # where the key is the last 12 positions of the k-mer, and the value is the k-mer.
 # Create a second hash to count how many times each 12-mer occurs in the genome.
@@ -17,14 +29,11 @@ use Bio::SeqIO;
 #hash to store kmers
 my %kMerHash = ();
 
-#create an output file
-open( FASTA_OUT, ">", 'crisprs1.fasta' ) or die $!;    #open or die
+#Initialize the CRISPR count to zero
+my $crisprCount = 1;
 
-# Use Bio::SeqIO to read in FASTA file
-my $fastaObjects = Bio::SeqIO->new(
-	-file   => "dmel-all-chromosome-r6.17.fasta",
-	-format => 'fasta'
-);
+#hash to store occurrences of last 12 positions
+my %last12Counts = ();
 
 # For each Fasta Object, send fasta sequence for processing
 while ( my $fastaObject = $fastaObjects->next_seq ) {
@@ -32,12 +41,31 @@ while ( my $fastaObject = $fastaObjects->next_seq ) {
 	processSequence($objectSequence);
 }
 
+#Loop through the hash of last 12 counts
+for my $last12Seq ( sort ( keys %last12Counts ) ) {
+
+	#Check if count == 1 for this sequence
+	if ( $last12Counts{$last12Seq} == 1 ) {
+		my $seq_obj = Bio::Seq->new(
+			-seq        => $kMerHash{$last12Seq},
+			-desc       => "CRISPR",
+			-display_id => "crispr_$crisprCount",
+			-alphabet   => "dna"
+		);
+
+		#The last 12 seq of this CRISPR is unique in the genome.
+		#Increment the CRISPR count.
+		$crisprCount++;
+
+		#Print the CRISPR in FASTA format.
+		$outputObject->write_seq($seq_obj);
+	}
+}
+
+# Subroutine to evaluate each sequence in a sliding window
 sub processSequence {
 	my ($sequenceRef) = @_;
-	#hash to store occurrences of last 12 positions
-	my %last12Counts = ();
 
-	#declare scalars to characterize sliding window
 	#Set the size of the sliding window
 	my $windowSize = 21;
 
@@ -53,7 +81,6 @@ sub processSequence {
 		$windowStart += $stepSize
 	  )
 	{
-
 	   #Get a 21-mer substring from sequenceRef (two $ to deference reference to
 	   #sequence string) starting at the window start for length $windowStart
 		my $crisprSeq = substr( $sequenceRef, $windowStart, $windowSize );
@@ -65,28 +92,6 @@ sub processSequence {
 			#Put the crispr in the hash with last 12 as key, full 21 as value.
 			$kMerHash{$2} = $1;
 			$last12Counts{$2}++;
-
 		}
 	}
-
-	#Initialize the CRISPR count to zero
-	my $crisprCount = 0;
-
-	#Loop through the hash of last 12 counts
-	for my $last12Seq ( sort ( keys %last12Counts ) ) {
-
-		#Check if count == 1 for this sequence
-		if ( $last12Counts{$last12Seq} == 1 ) {
-
-			#The last 12 seq of this CRISPR is unique in the genome.
-			#Increment the CRISPR count.
-			$crisprCount++;
-
-			#Print the CRISPR in FASTA format.
-			print FASTA_OUT ">crispr_$crisprCount CRISPR\n",
-			  "$kMerHash{$last12Seq}\n";
-		}
-	}
-
 }
-
