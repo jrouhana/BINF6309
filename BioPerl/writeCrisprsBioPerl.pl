@@ -26,7 +26,7 @@ my $writeFile = 'crisprs.fasta';
 my $usage = "\n$0 [options] \n
 Options: 
 	-read	Read FASTA file name
-	-write	File the write to
+	-write	File to write to
 	-help	Show the message you're reading";
 
 # Check arguments
@@ -43,7 +43,7 @@ unless ( -e $readFile and -w $writeFile or !-e $writeFile ) {
 	}
 
 	unless ($writeFile) {
-		print "Write file file is possibly read-only\n";
+		print "Write file is possibly read-only\n";
 	}
 	die $usage;
 }
