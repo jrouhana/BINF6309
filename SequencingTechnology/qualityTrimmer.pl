@@ -11,13 +11,23 @@ use Pod::Usage;           # For documentation
 # Each gets trimmed and made to clear Phred range of 20. The descriptions
 # are retrieved, and an alternating left-right output is written.
 
-# Assign default values
-my $leftFile    = "Sample.R1.fastq";
-my $rightFile   = "Sample.R2.fastq";
+# Assign default values if the files exist
+my $defaultL = "Sample.R1.fastq";
+my $leftFile = "";
+if ( -e $defaultL ) {
+	$leftFile = $defaultL;
+}
+
+my $defaultR  = "Sample.R2.fastq";
+my $rightFile = "";
+if ( -e $defaultR ) {
+	$rightFile = "Sample.R2.fastq";
+}
+
 my $interleaved = 'Interleaved.fastq';
 my $qual        = 20;
 
-# Options 
+# Options
 my $usage = "\n$0 [options] \n
 Options: 
 	-left	Right reads file name
@@ -27,29 +37,30 @@ Options:
 
 # Check arguments
 GetOptions(
-	'left=s' => \$leftFile,
-	'right=s' => \$rightFile,
+	'left=s'        => \$leftFile,
+	'right=s'       => \$rightFile,
 	'interleaved=s' => \$interleaved,
-	'qual=i' => \$qual,
-	'help' => sub{pod2usaage($usage);}, 
+	'qual=i'        => \$qual,
+	'help'          => sub { pod2usaage($usage); },
 ) or pod2usage($usage);
 
 # Check all arguments are valid
-unless( $leftFile and $rightFile and $qual and $interleaved ) {
-	unless($leftFile) {
-		print "Left file read is either invalid or not specified\n"
+unless ( $leftFile and $rightFile and $qual and $interleaved ) {
+	unless ($leftFile) {
+		print "Left file read is either invalid or not specified\n";
 	}
-	
-	unless($rightFile) {
-		print "Right file read is either invalid or not specified\n"
+
+	unless ($rightFile) {
+		print "Right file read is either invalid or not specified\n";
 	}
-	
+
 	unless ($qual) {
-		print "Specify an integer score for quality cut off\n"
+		print "Specify an integer score for quality cut off\n";
 	}
-	
-	unless($interleaved) {
-		print "Specify a string name for interleaved file output, or leave default value\n"
+
+	unless ($interleaved) {
+		print
+"Specify a string name for interleaved file output, or leave default value\n";
 	}
 	die $usage;
 }
