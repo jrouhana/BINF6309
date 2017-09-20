@@ -30,7 +30,7 @@ my $qual        = 20;
 # Options
 my $usage = "\n$0 [options] \n
 Options: 
-	-left	Right reads file name
+	-left	Left reads file name
 	-right	Right reads file name
 	-qual	Quality score necessary
 	-help	Show the message you're reading";
