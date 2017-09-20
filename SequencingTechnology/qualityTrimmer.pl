@@ -44,8 +44,8 @@ GetOptions(
 	'help'          => sub { pod2usaage($usage); },
 ) or pod2usage($usage);
 
-# Check all arguments are valid
-unless ( $leftFile and $rightFile and $qual and $interleaved ) {
+# Check all arguments are valid and exist
+unless ( -e $leftFile and -e $rightFile and $qual and $interleaved ) {
 	unless ($leftFile) {
 		print "Left file read is either invalid or not specified\n";
 	}
