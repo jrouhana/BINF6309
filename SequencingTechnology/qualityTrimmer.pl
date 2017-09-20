@@ -45,7 +45,7 @@ GetOptions(
 ) or pod2usage($usage);
 
 # Check all arguments are valid and exist
-unless ( -e $leftFile and -e $rightFile and $qual and $interleaved ) {
+unless ( -e $leftFile and -e $rightFile and $qual and -w $interleaved ) {
 	unless ($leftFile) {
 		print "Left file read is either invalid or not specified\n";
 	}
@@ -59,8 +59,7 @@ unless ( -e $leftFile and -e $rightFile and $qual and $interleaved ) {
 	}
 
 	unless ($interleaved) {
-		print
-"Specify a string name for interleaved file output, or leave default value\n";
+		print "Interleaved file is possibly read-only\n";
 	}
 	die $usage;
 }
