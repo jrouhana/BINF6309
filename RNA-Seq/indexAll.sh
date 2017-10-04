@@ -14,5 +14,5 @@ do
         # f3 = file name without path
         f3=$(echo $f2 |cut -d'/' -f$num0cc)
 	samtools index $inputPath$f3.sorted.bam \
-	$outputPath$f3.sorted.bam.bai &
+	1>index.log 2>index.err
 done
