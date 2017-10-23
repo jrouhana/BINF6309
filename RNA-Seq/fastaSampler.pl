@@ -8,7 +8,7 @@ use Pod::Usage;
 
 # Check if default Fasta exists, and if so, use it
 my $defaultFastaIn = "Trinity-GG.fasta.transdecoder.pep";
-my $fastaIn    = "";
+my $fastaIn        = "";
 if ( -e $defaultFastaIn ) {
 	$fastaIn = $defaultFastaIn;
 }
@@ -28,11 +28,12 @@ Options:
 	-help		Show the message that you are reading
 ";
 
+# Input options
 GetOptions(
 	'fastaIn=s'    => \$fastaIn,
 	'fastaOut=s'   => \$fastaOut,
 	'sampleRate=i' => \$sampleRate,
-	'help'           => sub { pod2usage($usage); },
+	'help'         => sub { pod2usage($usage); },
 ) or pod2usage($usage);
 
 # Check all arguments are valid and exist
@@ -47,15 +48,23 @@ unless ( -e $fastaIn and -w $fastaOut or !-e $fastaOut ) {
 	die $usage;
 }
 
-
 # Input file
 my $input = Bio::SeqIO->new(
-	-file => $fastaIn,
+	-file   => $fastaIn,
 	-format => 'fasta'
 );
 
 # Output file
 my $output = Bio::SeqIO->new(
-	-file => ">$fastaOut",
+	-file   => ">$fastaOut",
 	-format => 'fasta'
-	);
+);
+
+# Sampler. Adds multiples of sampleRate
+my $seqCount = 0;
+while ( my $seq = $input->next_seq ) {
+	$seqCount++;
+	if ( ( $seqCount % $sampleRate ) == 0 ) {
+		$output->write_seq($seq);
+	}
+}
