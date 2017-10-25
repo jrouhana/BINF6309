@@ -14,7 +14,7 @@ if ( -e $defaultFastaIn ) {
 }
 
 # Default Fasta Out file
-my $fastaOut = "sample.pep";
+my $fastaOut = "subset.pep";
 
 # Default integer- which n-th do you want to sample?
 my $sampleRate = 1000;
