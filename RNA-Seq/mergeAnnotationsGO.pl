@@ -27,13 +27,9 @@ my %goData;
 # Loop through input to get go_ID and go_name
 while (<GO>) {
 	chomp;
-	my ( $go_id, $go_name ) = split ( "\t", $_);
+	my ( $go_id, $go_name ) = split( "\t", $_ );
 	$goData{$go_id} = $go_name;
 }
-
-foreach my $test (keys %goData) {
-	print $goData{$test},"\n";
-};
 
 while (<SP>) {
 	chomp;
@@ -42,9 +38,12 @@ while (<SP>) {
 	my ( $trinity, $swissProt, $description, $eValue ) =
 	  split( "\t", $_ );
 	if ( defined $spToGo{$swissProt} ) {
-#		if( defined $)
 		foreach my $go ( sort keys %{ $spToGo{$swissProt} } ) {
-#			print join( "\t", $trinity, $description, $swissProt, $go ), "\n";
+			if ( defined $goData{$go} ) {
+				# Print, in this order: Trinity ID, SwissProt ID, swissProt description, GO ID, Go Description
+				print join( "\t", $trinity, $swissProt, $description, $go, $goData{$go} ),
+				  "\n";
+			}
 		}
 	}
 }
